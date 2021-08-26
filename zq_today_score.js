@@ -21,30 +21,32 @@ let zq_cookie= $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "")
 let zq_cookieArr = []
 let zq_cookies = ""
 
-if (!zq_cookie) {
-     $.msg($.name, '【提示】进入点击右下角"任务图标"，再跑一次脚本', '不知道说啥好', {
-         "open-url": "给您劈个叉吧"
-     });
-     $.done()
- }
- else if (zq_cookie.indexOf("@") == -1 && zq_cookie.indexOf("@") == -1) {
-            zq_cookieArr.push(zq_cookie)
- }
- else if (zq_cookie.indexOf("@") > -1) {
-            zq_cookies = zq_cookie.split("@")
- }
- else if (process.env.zq_cookie && process.env.zq_cookie.indexOf('@') > -1) {
-            zq_cookieArr = process.env.zq_cookie.split('@');
-            console.log(`您选择的是用"@"隔开\n`)
- }
- else {
-            zq_cookies = [process.env.zq_cookie]
- };
-    Object.keys(zq_cookies).forEach((item) => {
-        if (zq_cookies[item]) {
-            zq_cookieArr.push(zq_cookies[item])
-        }
-    })
+if (zq_cookie) {
+    if (zq_cookie.indexOf("@") == -1 && zq_cookie.indexOf("@") == -1) {
+        zq_cookieArr.push(zq_cookie)
+    } else if (zq_cookie.indexOf("@") > -1) {
+        zq_cookies = zq_cookie.split("@")
+    } else if (process.env.zq_cookie && process.env.zq_cookie.indexOf('@') > -1) {
+        zq_cookieArr = process.env.zq_cookie.split('@');
+        console.log(`您选择的是用"@"隔开\n`)
+    }
+} else {
+    var fs = require("fs");
+    zq_cookie = fs.readFileSync("zq_cookie.txt", "utf8");
+    if (zq_cookie !== `undefined`) {
+        zq_cookies = zq_cookie.split("\n");
+    } else {
+        $.msg($.name, '【提示】进入点击右下角"任务图标"，再跑一次脚本', '不知道说啥好', {
+            "open-url": "给您劈个叉吧"
+        });
+        $.done()
+    }
+}
+Object.keys(zq_cookies).forEach((item) => {
+    if (zq_cookies[item] && !zq_cookies[item].startsWith("#")) {
+        zq_cookieArr.push(zq_cookies[item])
+    }
+})
 
 !(async () => {
      if (typeof $request !== "undefined") {
@@ -71,10 +73,10 @@ if (!zq_cookie) {
 
 
          if (message.length != 0) {
-             await notify ? notify.sendNotify("中青看点收益查询", `${message}\n\n shaolin-kongfu`) :
-                 $.msg($.name, "中青看点收益查询", `${message}`);
+             await notify ? notify.sendNotify("中青看点收益查询", `${message}\n\n 吹水群：https://t.me/ShaolinTemple2`) :
+                 $.msg($.name, "中青看点收益查询", `${message}\n\n吹水群：https://t.me/ShaolinTemple2`);
          } else if ($.isNode()) {
-             await notify.sendNotify("中青看点收益查询", `${message}\n\nshaolin-kongfu`);
+             await notify.sendNotify("中青看点收益查询", `${message}\n\n吹水群：https://t.me/ShaolinTemple2`);
          }
      }
      })()
@@ -99,7 +101,7 @@ function today_score(zq_cookie1,timeout = 0) {
                     console.log('\n当前金币总数:'+result.user.score)
                     console.log('\n折合人民币总数:'+result.user.money)
                     $.message = `今日收益总计:${result.user.today_score}金币\n 当前金币总数:${result.user.score} \n 折合人民币总数:${result.user.money}元`
-                    $.msg($.name, "", `今日收益总计:${result.user.today_score}金币\n 当前金币总数:${result.user.score} \n 折合人民币总数:${result.user.money}元`);
+                    //$.msg($.name, "", `今日收益总计:${result.user.today_score}金币\n 当前金币总数:${result.user.score} \n 折合人民币总数:${result.user.money}元`);
                 }else{
                      console.log(result)
                 }

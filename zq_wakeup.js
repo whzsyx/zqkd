@@ -1,53 +1,11 @@
-/*
-shaolin-kongfu
-
-软件名称：中青看点
-赞赏:邀请码57984759
-
-万分感谢！！
-
-[rewrite_local]
-
-#看看赚
-https://kandian.wkandian.com/v5/nameless/adlickstart.json 重写目标 https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/zq/zqkkz.js
-[MITM]
-hostname = kandian.wkandian.com
-*/
-const $ = new Env("中青看点看看赚");
+const $ = new Env("中青看点打卡赚钱");
 const notify = $.isNode() ? require('./sendNotify') : '';
 message = ""
-
-let zqlookStartbody= $.isNode() ? (process.env.zqlookStartbody ? process.env.zqlookStartbody : "") : ($.getdata('zqlookStartbody') ? $.getdata('zqlookStartbody') : "")
-let zqlookStartbodyArr = []
-let zqlookStartbodys = ""
-
 let zq_cookie= $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
 let zq_cookieArr = []
 let zq_cookies = ""
-
-//待改
-const lookheader = {
-    'device-platform': 'android',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': '1183',
-    'Host': 'kandian.wkandian.com'
-}
-//待改
-const rewardheader={
-    'device-platform': 'android',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': '1199',
-    'Host': 'kandian.wkandian.com'
-}
-
-const lookStartheader={
-    'device-platform': 'android',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': '1199',
-    'Host': 'kandian.wkandian.com'
-}
-
-
+var myDate = new Date();
+var hour=myDate.getHours();
 
 if (zq_cookie) {
     if (zq_cookie.indexOf("@") == -1 && zq_cookie.indexOf("@") == -1) {
@@ -75,161 +33,71 @@ Object.keys(zq_cookies).forEach((item) => {
         zq_cookieArr.push(zq_cookies[item])
     }
 })
-if (zqlookStartbody) {
-    if (zqlookStartbody.indexOf("&") == -1) {
-        zqlookStartbodyArr.push(zqlookStartbody)
-    } else if (zqlookStartbody.indexOf("&") > -1) {
-        zqlookStartbodys = zqlookStartbody.split("&")
-    } else if (process.env.zqlookStartbody && process.env.zqlookStartbody.indexOf('&') > -1) {
-        zqlookStartbodyArr = process.env.zqlookStartbody.split('&');
-        console.log(`您选择的是用"&"隔开\n`)
-    }
-} else {
-    var fs = require("fs");
-    zqlookStartbody = fs.readFileSync("zqlookStartbody.txt", "utf8");
-    if (zqlookStartbody !== `undefined`) {
-        zqlookStartbodys = zqlookStartbody.split("\n");
-    } else {
-        $.msg($.name, '【提示】请点击看看赚某一任务获取body', '不知道说啥好', {
-            "open-url": "给您劈个叉吧"
-        });
-        $.done()
-    }
-}
-Object.keys(zqlookStartbodys).forEach((item) => {
-    if (zqlookStartbodys[item] && !zqlookStartbodys[item].startsWith("#")) {
-        zqlookStartbodyArr.push(zqlookStartbodys[item])
-    }
-})
 
 !(async () => {
-     if (typeof $request !== "undefined") {
-     await getzqlookStartbody()
-     $.done()
- }else{
-    console.log(`共${zqlookStartbodyArr.length}个看看赚body`)
-	        for (let k = 0; k < zqlookStartbodyArr.length; k++) {
-
-                zqlookStartbody1 = zqlookStartbodyArr[k];
-                console.log(`--------第 ${k + 1} 次看看赚激活执行中--------\n`)
-                    await lookStart()
-                await $.wait(1000);
-                console.log("\n\n")
-            }
-            console.log(`共${zq_cookieArr.length}个cookie`)
+        console.log(`共${zq_cookieArr.length}个cookie`)
 	        for (let k = 0; k < zq_cookieArr.length; k++) {
-                bodyVal = zq_cookieArr[k].split('&uid=')[0];
                 var time1 = Date.parse( new Date() ).toString();
                 time1 = time1.substr(0,10);
-
+		        bodyVal = zq_cookieArr[k].split('&uid=')[0];
                 cookie = bodyVal.replace(/zqkey=/, "cookie=")
                 cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
                 zq_cookie1= cookie_id  +'&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1'+'&request_time=' + time1 +'&time=' + time1 +'&'+ bodyVal
                 //console.log(`${zq_cookie1}`)
-                console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
-                for(let k = 0; k < 3; k++){
-                    id = k.toString()
-                    await openbox(id,zq_cookie1)
-                    await $.wait(30000);
-
-                }
-
+                if(hour >= 8 ){
+                console.log(`--------第 ${k + 1} 个账号早起打卡报名中--------\n`)
+                await signup()
                 console.log("\n\n")
+                    if ($.message.length !== 'undefined' && $.message.length != 0) {
+                        message += "账号" + (k + 1) + "：  " + $.message + " \n"
+                    }
+                await $.wait(3000)
 
-            }
+                } else if(hour >= 5 && hour < 8){
+                    console.log(`--------第 ${k + 1} 个账号早起打卡中--------\n`)
+                    await wakeup()
+                    console.log("\n\n")
+                    if ($.message.length !== 'undefined' && $.message.length != 0) {
+                        message += "账号" + (k + 1) + "：  " + $.message + " \n"
+                    }
+                await $.wait(3000)
 
-
-function openbox(id,zq_cookie1,timeout=0) {
-    return new Promise((resolve) => {
-        let url = {
-            url : 'https://kandian.wkandian.com/WebApi/Nameless/getBoxReward?id='+ id + '&' + zq_cookie1,
-            headers : {
-    'Host': 'kandian.wkandian.com',
-     //'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?' +zq_cookie1
-     'Referer':'https://kandian.wkandian.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&'+zq_cookie1},
-            }
-        $.get(url, async (err, resp, data) => {
-            try {
-
-                const result = JSON.parse(data)
-                if(result.status == 1){
-                    console.log(result.data)
-                }else{
-                     console.log(result)
                 }
-            } catch (e) {
-            } finally {
-                resolve()
+                if (message.length != 0) {
+             await notify ? notify.sendNotify("中青看点打卡", `${message}\n\n 吹水群：https://t.me/ShaolinTemple2`) :
+                 $.msg($.name, "中青看点打卡", `${message}\n\n 吹水群：https://t.me/ShaolinTemple2`);
+         } else if ($.isNode()) {
+             await notify.sendNotify("中青看点打卡", `${message}\n\n 吹水群：https://t.me/ShaolinTemple2`);
+         }
             }
-            },timeout)
-    })
-}}
-    })()
+     })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
-
-
-
-
-
-
-
-//获取看看赚激活body
-async function getzqlookStartbody() {
-if ($request.url.match(/\/kandian.wkandian.com\/v5\/nameless\/adlickstart/)) {
-          bodyVal=$request.body
-          await $.wait(1100);
-        if (zqlookStartbody) {
-            if (zqlookStartbody.indexOf(bodyVal) > -1) {
-                $.log("此看看赚任务请求已存在，本次跳过")
-            } else if (zqlookStartbody.indexOf(bodyVal) == -1) {
-                zqlookStartbodys = zqlookStartbody + "&" + bodyVal;
-                $.setdata(zqlookStartbodys, 'zqlookStartbody');
-                $.log(`${$.name}获取看看赚任务: 成功, zqlookStartbodys: ${bodyVal}`);
-                bodys = zqlookStartbodys.split("&")
-                // $.msg($.name, "获取第" + bodys.length + "个看看赚任务请求: 成功🎉", ``)
-            }
-        } else {
-            $.setdata(bodyVal, 'zqlookStartbody');
-            $.log(`${$.name}获取看看赚任务: 成功, zqlookStartbodys: ${bodyVal}`);
-            $.msg($.name, `获取第一个看看赚任务请求: 成功🎉`, ``)
+function signup(timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url : 'https://kd.youth.cn/WebApi/PunchCard/signUp?'+zq_cookie1,
+            headers : {'Host': 'kd.youth.cn',
+            'Content-Length': '0',
+             'Referer':' https://kd.youth.cn/h5/20190603cardactive/?'+'keyword_wyq=woyaoq.com&access=4G&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&'+zq_cookie1
+            },
         }
-    }
-
-  }
-//看看赚激活
-function lookStart(timeout = 0) {
-    return new Promise((resolve) => {
-        let url = {
-            url : 'https://kandian.wkandian.com/v5/nameless/adlickstart.json',
-            headers : lookStartheader,
-            body : zqlookStartbody1,}//xsgbody,}
         $.post(url, async (err, resp, data) => {
             try {
 
                 const result = JSON.parse(data)
-                if(result.success === true ){
-                    console.log('\n激活看看赚任务成功')
-                    comstate = result.items.comtele_state
-                    if(comstate === 1){
-                        console.log('\n任务: '+ result.items.banner_id+'已完成，跳过')
-                    }else {
-                        $.log("任务开始，" + result.items.banner_id + result.message);
-                        for (let j = 0; j < result.items.see_num - result.items.read_num; j++) {
-                        $.log("任务执行第" + parseInt(j + 1) + "次")
-                        await $.wait(8000);
-                        await lookstart()
-                    }
-                        await $.wait(10000);
-                    await reward()
-                    }
-
+                if(result.code === 1 ){
+                    signup1 = result.data.signup_num
+                    //console.log(result)
+                    console.log(`报名 ${result.msg} \n`)
+                    console.log(`瓜分人数 ${signup1}\n`)
+                    console.log(`瓜分金额 ${result.data.jackpot_money}`)
+                    $.message = `中青打卡赚钱报名:${result.msg}\n 瓜分人数:${signup1} \n 瓜分金额:${result.data.jackpot_money}元`
+                    $.msg($.name, "", `中青打卡赚钱报名:${result.msg}\n 瓜分人数:${signup1} \n 瓜分金额:${result.data.jackpot_money}元`);
                 }else{
-                    console.log('\n激活看看赚任务失败')
-                    smbody = $.getdata('zqlookStartbody').replace(zqlookStartbody1 + "&", "");
-                    $.setdata(smbody, 'zqlookStartbody');
-                    console.log("该看看赚任务已自动删除")
+                    $.message = `结果:${result.msg}\n`
+                    console.log(result)
                 }
             } catch (e) {
             } finally {
@@ -238,45 +106,31 @@ function lookStart(timeout = 0) {
             },timeout)
     })
 }
-//看看赚阅读
-function lookstart(timeout = 0) {
+
+function wakeup(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
-            url : 'https://kandian.wkandian.com/v5/nameless/bannerstatus.json',
-            headers : lookheader,
-            body : zqlookStartbody1,}//xsgbody,}
+            url : 'https://kd.youth.cn/WebApi/PunchCard/doCard?'+zq_cookie1,
+            headers : {'Host': 'kd.youth.cn',
+            'Content-Length': '0',
+             'Referer':' https://kd.youth.cn/h5/20190603cardactive/?'+'keyword_wyq=woyaoq.com&access=4G&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&'+zq_cookie1
+            },
+        }
         $.post(url, async (err, resp, data) => {
             try {
 
                 const result = JSON.parse(data)
-                if(result.success === true ){
-                    console.log('\n浏览看看赚文章成功')
-                }else {
-                    console.log('\n浏览看看赚文章失败')
-                }
-
-            } catch (e) {
-            } finally {
-                resolve()
-            }
-            },timeout)
-    })
-}
-//看看赚奖励
-function reward(timeout = 0) {
-    return new Promise((resolve) => {
-        let url = {
-            url : 'https://kandian.wkandian.com/v5/nameless/adlickend.json',
-            headers : rewardheader,
-            body : zqlookStartbody1,}//xsgbody,}
-        $.post(url, async (err, resp, data) => {
-            try {
-
-                const result = JSON.parse(data)
-                if(result.items.score !== "undefined" ){
-                    console.log('\n看看赚获得：'+result.items.score + '金币')
+                if(result.code === 1 ){
+                    signup = result.data.signup_num
+                    //console.log(result)
+                    console.log(`打卡 ${result.msg} \n`)
+                    console.log(`打卡时间： ${result.data.card_time} \n`)
+                    console.log(`瓜分人数 ${signup}\n`)
+                    console.log(`瓜分金额 ${result.data.jackpot_money}`)
+                    $.message = `中青打卡结果:${result.msg}\n打卡时间：${result.data.card_time}\n瓜分人数:${signup} \n 瓜分金额:${result.data.jackpot_money}元`
+                    $.msg($.name, "", `中青打卡结果:${result.msg}\n打卡时间：${result.data.card_time}\n瓜分人数:${signup} \n 瓜分金额:${result.data.jackpot_money}元`);
                 }else{
-                    console.log('\n领取奖励失败')
+                    console.log(result)
                 }
             } catch (e) {
             } finally {
